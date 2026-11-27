@@ -1,0 +1,19 @@
+# Third-party notices
+
+## vectorize-io/self-driving-agents
+
+The packages `agents/marketing-seo/`, `agents/marketing-content/`,
+`agents/marketing-ecommerce/` and `agents/marketing-social-media/` are generated from
+[vectorize-io/self-driving-agents](https://github.com/vectorize-io/self-driving-agents)
+by `scripts/build-marketing-skills.mjs`. Every `.apm/agents/*.agent.md` file
+reproduces an upstream agent prompt verbatim, with the upstream commit in its
+first line. Differences are limited to the directory layout and the frontmatter
+each file needs to load as an OpenCode subagent.
+
+Upstream declares the MIT license in its README badge. That repository ships no
+`LICENSE` file, so no license text is reproduced here; the attribution and the
+MIT terms of the upstream project apply to these derived files. The rest of this
+repository stays under AGPL-3.0-or-later as described in `LICENSE`.
+
+Changes made by generation are limited to the directory layout, the frontmatter
+of each `SKILL.md` and its reference index.
