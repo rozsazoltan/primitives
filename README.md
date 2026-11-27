@@ -13,7 +13,17 @@ Each skill is its own top-level directory in this repository and follows the sta
 | `marketing-seo` | Search marketing agents for technical SEO, AI citations, app stores, Baidu and video search |
 | `marketing-social-media` | Social media agents for short video, carousels, LinkedIn, Reddit, podcasts and platform strategy |
 
-The four marketing skills are generated from
+Each topic ships in two forms:
+
+- `<topic>` — one skill with a `SKILL.md` index and a `references/` file per upstream agent.
+- `<topic>-agents` — the same agents as OpenCode subagents under `.apm/agents/`, deployed to `.opencode/agents/<name>.md`.
+
+```bash
+apm install rozsazoltan/skills/marketing-seo --target opencode            # skill
+apm install rozsazoltan/skills/marketing-seo-agents --target opencode     # subagents
+```
+
+The four topics are generated from
 [vectorize-io/self-driving-agents](https://github.com/vectorize-io/self-driving-agents);
 `.github/workflows/sync-marketing-skills.yml` refreshes them daily and touches no
 other directory. See [NOTICE.md](NOTICE.md).

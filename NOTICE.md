@@ -3,10 +3,14 @@
 ## vectorize-io/self-driving-agents
 
 The skills `marketing-seo/`, `marketing-content/`, `marketing-ecommerce/` and
-`marketing-social-media/` are generated from
+`marketing-social-media/` and the subagent packages `marketing-seo-agents/`,
+`marketing-content-agents/`, `marketing-ecommerce-agents/` and
+`marketing-social-media-agents/` are generated from
 [vectorize-io/self-driving-agents](https://github.com/vectorize-io/self-driving-agents)
-by `scripts/build-marketing-skills.mjs`. Every `references/*.md` file reproduces
-an upstream agent prompt verbatim, with the upstream commit in its first line.
+by `scripts/build-marketing-skills.mjs`. Every `references/*.md` and
+`.apm/agents/*.agent.md` file reproduces an upstream agent prompt verbatim, with
+the upstream commit in its first line. Differences are limited to the directory
+layout, the frontmatter of each generated file and the reference index.
 
 Upstream declares the MIT license in its README badge. That repository ships no
 `LICENSE` file, so no license text is reproduced here; the attribution and the

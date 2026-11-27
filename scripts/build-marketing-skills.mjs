@@ -28,6 +28,7 @@ const OWNED = [
     topic: "seo",
     description:
       "Search marketing agents for technical SEO, AI citation strategy, app store optimization, Baidu and video search. Load the reference that matches the task.",
+    agentDescription: "Search marketing subagents for technical SEO, AI citations, app stores, Baidu and video search.",
   },
   {
     skill: "marketing-content",
@@ -35,6 +36,7 @@ const OWNED = [
     topic: "content",
     description:
       "Content marketing agents for long-form authorship, editorial production and growth experiments. Load the reference that matches the task.",
+    agentDescription: "Content marketing subagents for long-form authorship, editorial production and growth experiments.",
   },
   {
     skill: "marketing-ecommerce",
@@ -42,6 +44,7 @@ const OWNED = [
     topic: "ecommerce",
     description:
       "Ecommerce marketing agents for cross-border storefronts and live-stream selling. Load the reference that matches the task.",
+    agentDescription: "Ecommerce marketing subagents for cross-border storefronts and live-stream selling.",
   },
   {
     skill: "marketing-social-media",
@@ -49,8 +52,12 @@ const OWNED = [
     topic: "social-media",
     description:
       "Social media agents for short video, carousels, LinkedIn, Reddit, podcasts and platform strategy. Load the reference that matches the task.",
+    agentDescription: "Social media subagents for short video, carousels, LinkedIn, Reddit, podcasts and platform strategy.",
   },
 ]
+
+/** Every directory this script owns, so no other skill in the repository is touched. */
+const DIRS = OWNED.flatMap((entry) => [entry.skill, `${entry.skill}-agents`])
 
 const headers = { accept: "application/vnd.github+json", "user-agent": "rozsazoltan-skills-build" }
 if (process.env.GITHUB_TOKEN) headers.authorization = `Bearer ${process.env.GITHUB_TOKEN}`
@@ -79,6 +86,31 @@ function focus(text, limit = 140) {
   if (sentence.length <= limit) return sentence
   const cut = sentence.slice(0, limit)
   return `${cut.slice(0, cut.lastIndexOf(" "))}…`
+}
+
+/** Upstream body without its frontmatter. */
+function body(text) {
+  const match = /^---\r?\n[\s\S]*?\r?\n---\r?\n?/.exec(text)
+  return match ? text.slice(match[0].length) : text
+}
+
+function agentFile(entry, sha, agent) {
+  return `---
+description: ${agent.name} — ${focus(agent.description, 300)}
+mode: subagent
+---
+<!-- Source: ${UPSTREAM}@${sha} marketing/${entry.topic}/${agent.slug}.md (MIT). Upstream frontmatter is dropped because OpenCode rejects Claude-style tools and hex colours. -->
+<!-- Memory tools (agent_knowledge_*, recall) are not installed with this agent. When they are unavailable, work from the task and the user's own numbers, and say which facts you could not verify. -->
+
+${body(agent.text)}`
+}
+
+function agentManifest(entry) {
+  return `name: ${entry.skill}-agents
+version: 1.0.0
+description: ${entry.agentDescription}
+author: rozsazoltan
+`
 }
 
 function skillFile(entry, sha, agents) {
@@ -130,6 +162,7 @@ async function build() {
         slug: path.slice(prefix.length).replace(/\.md$/, ""),
         name: frontmatter(text).name ?? path.slice(prefix.length, -3),
         description: frontmatter(text).description ?? "",
+        text,
         body: `<!-- Source: ${UPSTREAM}@${sha} ${path} (MIT). Verbatim. -->\n${text}`,
       })
     }
@@ -137,20 +170,27 @@ async function build() {
     await mkdir(join(dir, "references"), { recursive: true })
     await writeFile(join(dir, "SKILL.md"), skillFile(entry, sha, agents))
     for (const agent of agents) await writeFile(join(dir, "references", `${agent.slug}.md`), agent.body)
-    console.log(`${entry.skill}: ${agents.length} references`)
+
+    const agentDir = join(scratch, `${entry.skill}-agents`)
+    await mkdir(join(agentDir, ".apm", "agents"), { recursive: true })
+    await writeFile(join(agentDir, "apm.yml"), agentManifest(entry))
+    for (const agent of agents) {
+      await writeFile(join(agentDir, ".apm", "agents", `${agent.slug}.agent.md`), agentFile(entry, sha, agent))
+    }
+    console.log(`${entry.skill}: ${agents.length} references, ${agents.length} agents`)
   }
   return { sha, scratch }
 }
 
-/** Lists `<skill>/<relative path>` for the owned skills, so only those paths are compared or replaced. */
+/** Lists `<dir>/<relative path>` for the owned directories, so only those paths are compared or replaced. */
 async function snapshot(base) {
   const files = new Map()
-  for (const { skill } of OWNED) {
+  for (const dir of DIRS) {
     const walk = async (relative) => {
-      for (const item of await readdir(join(base, skill, relative), { withFileTypes: true })) {
+      for (const item of await readdir(join(base, dir, relative), { withFileTypes: true })) {
         const path = join(relative, item.name)
         if (item.isDirectory()) await walk(path)
-        else files.set(`${skill}/${path}`, await readFile(join(base, skill, path), "utf8"))
+        else files.set(`${dir}/${path}`, await readFile(join(base, dir, path), "utf8"))
       }
     }
     await walk("")
@@ -171,9 +211,9 @@ async function main() {
       process.exitCode = drift ? 1 : 0
       return
     }
-    for (const { skill } of OWNED) {
-      await rm(join(ROOT, skill), { recursive: true, force: true })
-      await cp(join(scratch, skill), join(ROOT, skill), { recursive: true })
+    for (const dir of DIRS) {
+      await rm(join(ROOT, dir), { recursive: true, force: true })
+      await cp(join(scratch, dir), join(ROOT, dir), { recursive: true })
     }
     console.log(`Synced from ${UPSTREAM}@${sha}`)
   } finally {

@@ -20,13 +20,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22
-      - name: Regenerate marketing skills
+      - name: Regenerate marketing skills and agents
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: node scripts/build-marketing-skills.mjs
-      - name: Commit changed skills
+      - name: Commit changed paths
         run: |
           paths="marketing-seo marketing-content marketing-ecommerce marketing-social-media"
+          paths="$paths marketing-seo-agents marketing-content-agents marketing-ecommerce-agents marketing-social-media-agents"
           if git diff --quiet -- $paths; then
             echo "No upstream changes."
             exit 0
@@ -34,5 +35,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add $paths
-          git commit -m "chore(marketing): sync skills from self-driving-agents"
+          git commit -m "chore(marketing): sync skills and agents from self-driving-agents"
           git push
