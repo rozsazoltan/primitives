@@ -18,6 +18,8 @@ import { fileURLToPath } from "node:url"
 const UPSTREAM = "vectorize-io/self-driving-agents"
 const REF = process.env.UPSTREAM_REF ?? "main"
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..")
+/** Primitive folder that hosts these packages. */
+const HOST = "agents"
 const CHECK = process.argv.includes("--check")
 
 /** Package directory at the repository root, the upstream folder it mirrors, and its own description. */
@@ -109,7 +111,7 @@ async function build() {
       .map((node) => node.path)
       .sort()
     if (paths.length === 0) throw new Error(`No upstream files under ${prefix}`)
-    const dir = join(scratch, entry.package)
+    const dir = join(scratch, HOST, entry.package)
     await mkdir(join(dir, ".apm", "agents"), { recursive: true })
     await writeFile(join(dir, "apm.yml"), agentManifest(entry))
     for (const path of paths) {
@@ -129,10 +131,10 @@ async function snapshot(base) {
   const files = new Map()
   for (const { package: name } of OWNED) {
     const walk = async (relative) => {
-      for (const item of await readdir(join(base, name, relative), { withFileTypes: true })) {
+      for (const item of await readdir(join(base, HOST, name, relative), { withFileTypes: true })) {
         const path = join(relative, item.name)
         if (item.isDirectory()) await walk(path)
-        else files.set(`${name}/${path}`, await readFile(join(base, name, path), "utf8"))
+        else files.set(`${HOST}/${name}/${path}`, await readFile(join(base, HOST, name, path), "utf8"))
       }
     }
     await walk("")
@@ -153,9 +155,10 @@ async function main() {
       process.exitCode = drift ? 1 : 0
       return
     }
+    await mkdir(join(ROOT, HOST), { recursive: true })
     for (const { package: name } of OWNED) {
-      await rm(join(ROOT, name), { recursive: true, force: true })
-      await cp(join(scratch, name), join(ROOT, name), { recursive: true })
+      await rm(join(ROOT, HOST, name), { recursive: true, force: true })
+      await cp(join(scratch, HOST, name), join(ROOT, HOST, name), { recursive: true })
     }
     console.log(`Synced from ${UPSTREAM}@${sha}`)
   } finally {

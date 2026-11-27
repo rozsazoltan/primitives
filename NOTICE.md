@@ -2,8 +2,8 @@
 
 ## vectorize-io/self-driving-agents
 
-The packages `marketing-seo/`, `marketing-content/`, `marketing-ecommerce/` and
-`marketing-social-media/` are generated from
+The packages `agents/marketing-seo/`, `agents/marketing-content/`,
+`agents/marketing-ecommerce/` and `agents/marketing-social-media/` are generated from
 [vectorize-io/self-driving-agents](https://github.com/vectorize-io/self-driving-agents)
 by `scripts/build-marketing-skills.mjs`. Every `.apm/agents/*.agent.md` file
 reproduces an upstream agent prompt verbatim, with the upstream commit in its

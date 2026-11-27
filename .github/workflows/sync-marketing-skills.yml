@@ -26,7 +26,7 @@ jobs:
         run: node scripts/build-marketing-skills.mjs
       - name: Commit changed packages
         run: |
-          paths="marketing-seo marketing-content marketing-ecommerce marketing-social-media"
+          paths="agents/marketing-seo agents/marketing-content agents/marketing-ecommerce agents/marketing-social-media"
           if git diff --quiet -- $paths; then
             echo "No upstream changes."
             exit 0
