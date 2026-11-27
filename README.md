@@ -4,26 +4,22 @@ Curated agent skills maintained by [rozsazoltan](https://github.com/rozsazoltan)
 
 Each skill is its own top-level directory in this repository and follows the standard `SKILL.md` layout used by agent hosts such as [OpenCode](https://opencode.ai/) and [APM](https://github.com/microsoft/apm).
 
-## Skills
+## Agents
 
-| Skill | Covers |
+| Package | Covers |
 | --- | --- |
 | `marketing-content` | Content marketing agents for authorship, editorial production and growth experiments |
 | `marketing-ecommerce` | Ecommerce marketing agents for cross-border storefronts and live-stream selling |
 | `marketing-seo` | Search marketing agents for technical SEO, AI citations, app stores, Baidu and video search |
 | `marketing-social-media` | Social media agents for short video, carousels, LinkedIn, Reddit, podcasts and platform strategy |
 
-Each topic ships in two forms:
-
-- `<topic>` — one skill with a `SKILL.md` index and a `references/` file per upstream agent.
-- `<topic>-agents` — the same agents as OpenCode subagents under `.apm/agents/`, deployed to `.opencode/agents/<name>.md`.
+Each package deploys OpenCode subagents through APM's `.apm/agents/` layout:
 
 ```bash
-apm install rozsazoltan/skills/marketing-seo --target opencode            # skill
-apm install rozsazoltan/skills/marketing-seo-agents --target opencode     # subagents
+apm install rozsazoltan/skills/marketing-seo --target opencode
 ```
 
-The four topics are generated from
+The agents land in `.opencode/agents/<name>.md` and appear as subagents in the session. The four packages are generated from
 [vectorize-io/self-driving-agents](https://github.com/vectorize-io/self-driving-agents);
 `.github/workflows/sync-marketing-skills.yml` refreshes them daily and touches no
 other directory. See [NOTICE.md](NOTICE.md).
