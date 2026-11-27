@@ -1,8 +1,8 @@
-# Skills
+# Primitives
 
-Curated agent skills maintained by [rozsazoltan](https://github.com/rozsazoltan).
+Curated agent primitives maintained by [rozsazoltan](https://github.com/rozsazoltan).
 
-Each skill is its own top-level directory in this repository and follows the standard `SKILL.md` layout used by agent hosts such as [OpenCode](https://opencode.ai/) and [APM](https://github.com/microsoft/apm).
+Each primitive is its own top-level directory in this repository and follows the layout used by agent hosts such as [OpenCode](https://opencode.ai/) and [APM](https://github.com/microsoft/apm). A package can ship skills, subagents, commands or instructions; whatever it ships lives inside its own directory.
 
 ## Agents
 
@@ -16,23 +16,23 @@ Each skill is its own top-level directory in this repository and follows the sta
 Each package deploys OpenCode subagents through APM's `.apm/agents/` layout:
 
 ```bash
-apm install rozsazoltan/skills/marketing-seo --target opencode
+apm install rozsazoltan/primitives/marketing-seo --target opencode
 ```
 
-The agents land in `.opencode/agents/<name>.md` and appear as subagents in the session. The four packages are generated from
+The agents land in `.opencode/agents/<name>.md` and appear as subagents in the session. The `skills/` directory is reserved for skill-form packages; it currently holds only a placeholder. The four packages are generated from
 [vectorize-io/self-driving-agents](https://github.com/vectorize-io/self-driving-agents);
 `.github/workflows/sync-marketing-skills.yml` refreshes them daily and touches no
 other directory. See [NOTICE.md](NOTICE.md).
 
 ## Installation
 
-Install a skill directly with APM:
+Install a package directly with APM:
 
 ```bash
-apm install rozsazoltan/skills/<skill-name> --target opencode
+apm install rozsazoltan/primitives/<package-name> --target opencode
 ```
 
-Replace `<skill-name>` with the skill directory name. A skill that needs other skills declares them in its own `apm.yml`, so installing it installs everything it depends on.
+Replace `<package-name>` with the directory name. A package that needs other packages declares them in its own `apm.yml`, so installing it installs everything it depends on.
 
 ## License
 
